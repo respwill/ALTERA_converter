@@ -10,7 +10,7 @@ class txt_coverter():
         self.shipment_list_count = 0
         self.lot_number_line = 0
         self.current_dir = os.getcwd()
-        self.convert_df = pd.DataFrame(columns=['LOT#', 'P/D/L', 'Device', 'QTY', 'DATE CODE', 'TRACE CODE',])
+        self.convert_df = pd.DataFrame(columns=['LOT#', 'P/D/L', 'Device', 'QTY', 'DATE CODE', 'TRACE CODE','PO'])
 
         txt_finder = re.compile(r'.*[.]txt', re.IGNORECASE)
         for file in os.listdir(self.current_dir):
@@ -39,10 +39,10 @@ class txt_coverter():
 
                     elif len(data_combination) == 5:
                         if data_combination[0] != 'ETD/FLIGHT':
-                            print(data_combination)
                             self.lot_code = data_combination[0]
                             self.qty_code = data_combination[1]
                             self.trace_code = data_combination[3]
+                            self.po_code = data_combination[4]
                         else:
                             pass
 
@@ -50,11 +50,11 @@ class txt_coverter():
                         starting_point = line.find("DATE CODE..")
                         self.date_code = line[starting_point + 11:].replace(' ','')
                         self.date_code = line[starting_point + 11:].rstrip()
-                        self.convert_df.loc[len(self.convert_df)] = [self.lot_code, self.pdl, self.device_code, self.qty_code, self.date_code, self.trace_code, ]
-                        self.lot_code = self.qty_code = self.date_code = self.trace_code = ""
+                        self.convert_df.loc[len(self.convert_df)] = [self.lot_code, self.pdl, self.device_code, self.qty_code, self.date_code, self.trace_code, self.po_code ]
+                        self.lot_code = self.qty_code = self.date_code = self.trace_code = self.po_code = ""
                     else:
                         pass
-                #'LOT#', 'Device', 'QTY', 'DATE CODE', 'TRACE CODE', 'E CODE', 'IC', 'COO'
+
 
 
                 if not "ALTERA_ShipInfo_result" in os.listdir(self.current_dir):
@@ -74,9 +74,10 @@ class txt_coverter():
                 work_sheet.set_column('E:E',8)
                 work_sheet.set_column('F:F',15)
                 work_sheet.set_column('G:G',12)
+                work_sheet.set_column('H:H',12)
                 writer.close()
                 #reset for next file.
-                self.convert_df = pd.DataFrame(columns=['LOT#', 'P/D/L', 'Device', 'QTY', 'DATE CODE', 'TRACE CODE', ])
+                self.convert_df = pd.DataFrame(columns=['LOT#', 'P/D/L', 'Device', 'QTY', 'DATE CODE', 'TRACE CODE', 'PO' ])
                 print("{} converting is done".format(file))
 
 converter = txt_coverter()
